@@ -31,10 +31,8 @@
       background: #f6f8fa;
       cursor: pointer;
       font-size: 28px;
-      line-height: 1;
       display:grid;
       place-items:center;
-      user-select:none;
     }
     .btn:disabled{ opacity:.5; cursor:not-allowed; }
     .center{
@@ -56,19 +54,6 @@
       text-align:center;
       max-width: 90ch;
     }
-    .small{
-      font-size:12px;
-      color:#555;
-      text-align:center;
-      max-width: 90ch;
-    }
-    .row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:center;
-      flex-wrap:wrap;
-    }
     .mini{
       border: 1px solid #d0d7de;
       background:#fff;
@@ -82,64 +67,44 @@
 </head>
 <body>
   <div class="wrap">
-    <button class="btn" id="prevBtn" title="Zurück" disabled>◀</button>
+    <button class="btn" id="prevBtn" disabled>◀</button>
 
     <div class="center">
       <div class="player" id="player"></div>
 
-      <div class="row">
+      <div>
         <button class="mini" id="openBtn" disabled>Auf YouTube öffnen</button>
         <button class="mini" id="copyBtn" disabled>Link kopieren</button>
       </div>
 
       <div class="status" id="status">Lade…</div>
-      <div class="small">
-        Variante A (international) + <b>keine Shorts</b>. Skip: links = zurück, rechts = nächstes Random-Video.
-      </div>
     </div>
 
-    <button class="btn" id="nextBtn" title="Nächstes Video">▶</button>
+    <button class="btn" id="nextBtn">▶</button>
   </div>
 
-  <!-- YouTube IFrame API -->
   <script src="https://www.youtube.com/iframe_api"></script>
 
   <script>
     /***********************
-     * API KEY (dein Key)
+     * DEIN NEUER API KEY
      ***********************/
-    const YT_API_KEY = "AIzaSyBWDJjJhz7l_CjY7AR8JQNAd3xfk_2E2Do";
+    const YT_API_KEY = "AIzaSyDttlGaemvXru1QrJgrzrTvnJROj9E8HCQ";
 
-    /***********************
-     * RANDOM SETTINGS
-     ***********************/
-    // International: keine regionCode / relevanceLanguage, damit es wirklich "wild" wird.
     const RANDOM_WORDS = [
       "piano","volcano","origami","interview","street","forest","train","ocean",
       "chess","repair","history","physics","architecture","cooking","design",
       "robot","painting","math","jazz","documentary","cat","dog","travel","sports",
-      "gaming","comedy","science","how to","education","brazil","india","japan",
-      "korea","sweden","mexico","turkey","egypt","kenya","iceland","peru"
+      "gaming","comedy","science","education","brazil","india","japan","korea"
     ];
 
-    // Mixed categories
     const CATEGORIES = [1,2,10,15,17,19,20,22,23,24,25,26,27,28];
-
-    // SafeSearch: none|moderate|strict
     const SAFE_SEARCH = "moderate";
-
-    // No Shorts policy: reject videos < 60s (based on ISO 8601 duration)
     const MIN_SECONDS = 60;
 
-    /***********************
-     * UI + PLAYER
-     ***********************/
     let player;
     let currentVideoId = null;
-
-    // History stacks for skip back/forward behavior
     const backStack = [];
-    const forwardStack = [];
 
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
@@ -148,203 +113,96 @@
     const copyBtn = document.getElementById("copyBtn");
 
     function setStatus(t){ statusEl.textContent = t; }
-
     function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
-    function setButtonsEnabled(enabled){
-      nextBtn.disabled = !enabled;
-      prevBtn.disabled = backStack.length === 0;
-    }
-
-    function setOpenCopy(videoId){
-      if (!videoId){
-        openBtn.disabled = true; copyBtn.disabled = true;
-        openBtn.onclick = null; copyBtn.onclick = null;
-        return;
-      }
-      const url = `https://www.youtube.com/watch?v=${videoId}`;
-      openBtn.disabled = false;
-      copyBtn.disabled = false;
-
-      openBtn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
-      copyBtn.onclick = async () => {
-        try {
-          await navigator.clipboard.writeText(url);
-          setStatus(`Link kopiert: ${url}`);
-        } catch {
-          window.prompt("Kopiere den Link:", url);
-        }
-      };
-    }
-
-    function assertApiKey(){
-      if (!YT_API_KEY || YT_API_KEY.includes("YOUR_API_KEY")) {
-        throw new Error("API-Key fehlt. Trage deinen YouTube Data API Key in YT_API_KEY ein.");
-      }
-    }
-
-    // Parse YouTube ISO 8601 duration like PT1H2M3S → seconds
     function isoDurationToSeconds(iso){
-      // Very small parser, enough for PT#H#M#S
       const m = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(iso || "");
       if (!m) return 0;
-      const h = parseInt(m[1] || "0", 10);
-      const min = parseInt(m[2] || "0", 10);
-      const s = parseInt(m[3] || "0", 10);
-      return h * 3600 + min * 60 + s;
+      return (parseInt(m[1]||0)*3600)+(parseInt(m[2]||0)*60)+(parseInt(m[3]||0));
     }
 
-    async function ytSearchCandidateIds(){
-      assertApiKey();
-
-      // Chaotic query: word + random number + another word
+    async function ytSearch(){
       const q = `${pick(RANDOM_WORDS)} ${Math.floor(Math.random()*100000)} ${pick(RANDOM_WORDS)}`;
-      const videoCategoryId = String(pick(CATEGORIES));
-      const order = pick(["date","viewCount","relevance"]);
-
       const url = new URL("https://www.googleapis.com/youtube/v3/search");
       url.searchParams.set("key", YT_API_KEY);
       url.searchParams.set("part", "snippet");
       url.searchParams.set("type", "video");
       url.searchParams.set("maxResults", "25");
       url.searchParams.set("q", q);
-      url.searchParams.set("videoCategoryId", videoCategoryId);
+      url.searchParams.set("videoCategoryId", pick(CATEGORIES));
       url.searchParams.set("safeSearch", SAFE_SEARCH);
       url.searchParams.set("videoEmbeddable", "true");
       url.searchParams.set("videoSyndicated", "true");
-      url.searchParams.set("order", order);
 
-      const res = await fetch(url.toString());
-      if (!res.ok) {
-        const txt = await res.text().catch(()=> "");
-        throw new Error(`YouTube API Fehler (search): ${res.status} ${res.statusText} ${txt}`.trim());
-      }
+      const res = await fetch(url);
       const data = await res.json();
-
-      return (data.items || [])
-        .map(it => it?.id?.videoId)
-        .filter(Boolean);
+      return (data.items || []).map(it => it.id.videoId);
     }
 
-    async function ytFilterNoShorts(ids){
-      // Use videos.list to get duration + embeddable status
+    async function filterNoShorts(ids){
       const url = new URL("https://www.googleapis.com/youtube/v3/videos");
       url.searchParams.set("key", YT_API_KEY);
       url.searchParams.set("part", "contentDetails,status");
       url.searchParams.set("id", ids.join(","));
 
-      const res = await fetch(url.toString());
-      if (!res.ok) {
-        const txt = await res.text().catch(()=> "");
-        throw new Error(`YouTube API Fehler (videos): ${res.status} ${res.statusText} ${txt}`.trim());
-      }
+      const res = await fetch(url);
       const data = await res.json();
 
-      const ok = [];
-      for (const it of (data.items || [])) {
-        const durationIso = it?.contentDetails?.duration;
-        const seconds = isoDurationToSeconds(durationIso);
-        const embeddable = it?.status?.embeddable;
-
-        if (embeddable && seconds >= MIN_SECONDS) ok.push(it.id);
-      }
-      return ok;
+      return (data.items || [])
+        .filter(v => v.status.embeddable && isoDurationToSeconds(v.contentDetails.duration) >= MIN_SECONDS)
+        .map(v => v.id);
     }
 
-    async function getRandomNonShortVideoId(){
-      // Try multiple rounds because filtering can remove many items
-      for (let attempt = 0; attempt < 8; attempt++) {
-        const candidates = await ytSearchCandidateIds();
-        if (!candidates.length) continue;
+    async function loadRandom(){
+      setStatus("Suche zufälliges Video...");
+      nextBtn.disabled = true;
 
-        // shuffle candidates
-        candidates.sort(() => Math.random() - 0.5);
+      try{
+        for(let i=0;i<6;i++){
+          const ids = await ytSearch();
+          const filtered = await filterNoShorts(ids);
+          if(filtered.length){
+            const vid = pick(filtered);
+            if(currentVideoId) backStack.push(currentVideoId);
+            currentVideoId = vid;
+            player.loadVideoById(vid);
+            prevBtn.disabled = backStack.length === 0;
 
-        const filtered = await ytFilterNoShorts(candidates.slice(0, 25));
-        if (!filtered.length) continue;
+            const url = `https://www.youtube.com/watch?v=${vid}`;
+            openBtn.disabled = false;
+            copyBtn.disabled = false;
+            openBtn.onclick = ()=>window.open(url,"_blank");
+            copyBtn.onclick = ()=>navigator.clipboard.writeText(url);
 
-        // pick one different from current if possible
-        const pool = filtered.filter(id => id !== currentVideoId);
-        return (pool.length ? pick(pool) : pick(filtered));
+            setStatus("Video geladen");
+            break;
+          }
+        }
+      }catch(e){
+        setStatus("Fehler: "+e.message);
       }
-      return null;
-    }
 
-    function playVideo(videoId, {pushHistory = true} = {}){
-      if (!videoId) return;
-
-      if (pushHistory && currentVideoId) {
-        backStack.push(currentVideoId);
-        // new branch clears forward stack
-        forwardStack.length = 0;
-      }
-
-      currentVideoId = videoId;
-      prevBtn.disabled = backStack.length === 0;
-
-      setOpenCopy(videoId);
-      setStatus(`Lade Video: ${videoId}`);
-      player.loadVideoById(videoId);
-    }
-
-    async function loadNextRandom(){
-      setButtonsEnabled(false);
-      setStatus("Suche zufälliges Video (ohne Shorts)…");
-
-      try {
-        const vid = await getRandomNonShortVideoId();
-        if (!vid) throw new Error("Konnte kein passendes Video finden (ohne Shorts). Bitte nochmal.");
-        playVideo(vid, {pushHistory: true});
-      } catch (e) {
-        setStatus(e?.message ? e.message : String(e));
-      } finally {
-        setButtonsEnabled(true);
-      }
+      nextBtn.disabled = false;
     }
 
     function goBack(){
-      if (!backStack.length) return;
-      const prev = backStack.pop();
-      if (currentVideoId) forwardStack.push(currentVideoId);
+      if(!backStack.length) return;
+      const vid = backStack.pop();
+      currentVideoId = vid;
+      player.loadVideoById(vid);
       prevBtn.disabled = backStack.length === 0;
-
-      // Going back should not push history again
-      currentVideoId = prev;
-      setOpenCopy(prev);
-      setStatus(`Zurück: ${prev}`);
-      player.loadVideoById(prev);
     }
 
-    // Right button always gets a NEW random (not forward stack),
-    // because you wanted a random cycler. (Forward stack exists only to not lose state if you want to extend later.)
     prevBtn.addEventListener("click", goBack);
-    nextBtn.addEventListener("click", loadNextRandom);
+    nextBtn.addEventListener("click", loadRandom);
 
-    // Keyboard: left/right arrows
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") goBack();
-      if (e.key === "ArrowRight") loadNextRandom();
-    });
-
-    // YouTube IFrame API callback
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player("player", {
-        host: "https://www.youtube-nocookie.com",
-        width: "100%",
-        height: "100%",
-        videoId: "",
-        playerVars: {
-          autoplay: 1,
-          rel: 0,
-          modestbranding: 1
-        },
-        events: {
-          onReady: async () => {
-            setStatus("Player bereit. Lade erstes zufälliges Video…");
-            setButtonsEnabled(true);
-            await loadNextRandom();
-          }
-        }
+    function onYouTubeIframeAPIReady(){
+      player = new YT.Player("player",{
+        host:"https://www.youtube-nocookie.com",
+        width:"100%",
+        height:"100%",
+        playerVars:{autoplay:1,rel:0},
+        events:{ onReady: loadRandom }
       });
     }
     window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
