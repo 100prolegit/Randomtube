@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Random YouTube Cycler (No Shorts)</title>
+  <title>Random YouTube Cycler (ID-Liste)</title>
   <style>
     :root { color-scheme: light; }
     body{
@@ -83,28 +83,428 @@
     <button class="btn" id="nextBtn">▶</button>
   </div>
 
+  <!-- Nur IFrame Player API (keine Data API, kein API-Key) -->
   <script src="https://www.youtube.com/iframe_api"></script>
 
   <script>
     /***********************
-     * DEIN NEUER API KEY
+     * YouTube-ID-Liste (deine IDs)
      ***********************/
-    const YT_API_KEY = "AIzaSyDttlGaemvXru1QrJgrzrTvnJROj9E8HCQ";
+    const VIDEO_IDS = [
+      "59YTic430K0",
+      "AqRBzZ9pdQQ",
+      "2lAcWnmbLoY",
+      "r8iKCI6M4se",
+      "yoi988c8Sm6",
+      "n0XGVoiT0hU",
+      "BNrau9jW_Ym",
+      "pU3VJkVjQKj",
+      "lKpBHCQR4sT",
+      "4LEu1EiAJVA",
+      "zQ_Fs1rznlJ",
+      "kNv-RXX_2yk",
+      "OugymM_dYQi",
+      "2WKvhajOfNO",
+      "vQ_WBGh4jIZ",
+      "BZVftWBU8Uy",
+      "gYRl7qMqOLI",
+      "yd38OL7npKm",
+      "1YKdQUrMC_O",
+      "PaFEQ9F5GPP",
+      "zKbI5gNq9On",
+      "KZFFNY3hAtp",
+      "j-1m0u5APcy",
+      "o_XbW-w4YVJ",
+      "FeandEv1cZe",
+      "DnBh8RI2eQs",
+      "0F3ZEOhK3O7",
+      "tZ-h41IFEGy",
+      "aupHzVycEPZ",
+      "tFo-lgFE50w",
+      "NZVIxo6mUK8",
+      "2hj2iwBt0w1",
+      "lTxYaVV-cXW",
+      "10FWjpqoafs",
+      "5wYYXr2ZjrH",
+      "e3IYgpYKG1A",
+      "OFqlV3w0gtr",
+      "Ki-f08vBbUA",
+      "eMoTa5XDa9t",
+      "FR-_wGM6hBf",
+      "19t96i2DYbD",
+      "XYjYn5EspH1",
+      "e5RgqHLfMUR",
+      "7x1wt__myNT",
+      "d2Ji8kT9Ul3",
+      "ZtNneWeiITg",
+      "5GYQvTRhIrk",
+      "cVddskmmmwH",
+      "Y5inFIRZTAU",
+      "apn2o86SKz_",
+      "SZJcX8gARQ0",
+      "Au_xaFSWOMO",
+      "dF4617yeGTu",
+      "po9bkrLMvOE",
+      "zFbZoHhm6bo",
+      "2T4TApiYhV_",
+      "NWpcjuuaDrT",
+      "wLrbNy-yTgD",
+      "N3cvXfBzBYp",
+      "EQ4q1n9CAEF",
+      "baeBQ_VZssz",
+      "bj0vhcyInPP",
+      "yvUsY-nM_Oy",
+      "bkcND9OrYYD",
+      "aS651hsaCIp",
+      "_Lw2K0v-tT_",
+      "NTPq7R49V06",
+      "CsKbCXbwWkD",
+      "YR7PrwvkYvM",
+      "SQRQGug2yGU",
+      "zZV8ZqV0ECj",
+      "d33eg2_ghar",
+      "d1BcNE4eZ1J",
+      "I3NvYT8WoHa",
+      "0gQitLzj9Xp",
+      "xTjYB-zouX0",
+      "66TuLenPvRC",
+      "m_Ss4ZT7lvY",
+      "54j-mdtNOsc",
+      "pkr8kfp4cl_",
+      "sql4qZ1pTr7",
+      "R_4IONFWz_i",
+      "bhxf1u67kSt",
+      "dRhYWrfcVka",
+      "EMrFjntHXjA",
+      "tHFpie_cpXh",
+      "RSdzkybz-zN",
+      "f9PTYOY8iQ8",
+      "i7cyeyamt11",
+      "zc3cE7Knpsf",
+      "sKPGdo0GCAy",
+      "J5BRFOs-myx",
+      "4L-A8Nj8f3h",
+      "S-5NktT3jUA",
+      "2r3ICBp68g3",
+      "Y2lCWTDdH3m",
+      "TocrUutZSro",
+      "aFYtAR0rPL3",
+      "trA4hqDZmYK",
+      "v2wp0gH2AcB",
+      "tSAjlax86E3",
+      "mdoObF0c1NL",
+      "qhNrh2WuMPP",
+      "yB18IAIA9XT",
+      "9NgSNgwo3l4",
+      "NBDlK3_CCh2",
+      "lfcwIpb2uh2",
+      "DX5LlTbsm-M",
+      "SOp2RNfDPWH",
+      "L_nWSgbagal",
+      "Xl9KdSwX53g",
+      "Cx5Ew_FXVJG",
+      "vf7VDeroyh1",
+      "zq96MsihofR",
+      "-WrQBHII0pL",
+      "QRHzsfAiHc6",
+      "j5kNafRuL4x",
+      "UcgEuVbowIS",
+      "v9nZUBZOweB",
+      "wfF8agW1Esk",
+      "BYxONadfGve",
+      "m75WXgCGunG",
+      "qrXdSdnOkZM",
+      "bBz1TQoWvnC",
+      "_l4tjCFVnLx",
+      "QDHbnj39upM",
+      "MBqzkwPAuAw",
+      "3-NoJJdeymV",
+      "2C8NLzuSezm",
+      "5O-FGLRhE8o",
+      "mZGxbUnrvr6",
+      "BzkR-wpmv4y",
+      "59MkbkJgz8f",
+      "xGEmhxC6NJW",
+      "WWtTfT-MUJ_",
+      "nmxrqpN-8pn",
+      "uEg4OTJXNdr",
+      "7mvfy6BDRDU",
+      "BnDjJqcaAh1",
+      "uc_jb44riCq",
+      "KozK8NZC46p",
+      "RVU-Oa5W_V8",
+      "7tIVLdUyXX0",
+      "mtL99R10DQM",
+      "B8JratQE6oA",
+      "QKsqHE4uJNi",
+      "0id1ehctMrv",
+      "p1kHKsaU1wI",
+      "yp_8EqpVaeh",
+      "1BLMcJ1ruVA",
+      "PQx99UjhOiD",
+      "IOCN6ffU9PG",
+      "DG77EKvVUMD",
+      "_xZj-3TBE3T",
+      "scE3Q5FqGhf",
+      "6RBvj8zUNJW",
+      "AGzTXc9UR-O",
+      "rmQYUpwhkoW",
+      "y26PRmUs4YN",
+      "ThN3b8btdLU",
+      "M5whnZJJ5bH",
+      "7ddkuqdYmDN",
+      "RawZ16QOR2b",
+      "_kttvPys6wi",
+      "KrRgj3sOTzY",
+      "bSZE1g-ddHQ",
+      "-wN4Rn2hbxS",
+      "VHaxEa6Am59",
+      "82MmVPPyv9n",
+      "ff8sqWQvVdo",
+      "onc9DnH8ron",
+      "LeDGEusMFdY",
+      "25YlhSBF8XR",
+      "TVbAsXVmqVn",
+      "CDUjnYkrikq",
+      "8giyTqpbb2T",
+      "OSrLsz_g5-o",
+      "-aVoteypd8d",
+      "BYu0p8g_Dzr",
+      "_B-z42vNpXK",
+      "zo5QgCGqSf6",
+      "Xb8LgzcNAq5",
+      "eTXGcoA12e_",
+      "zy3c9zOmonH",
+      "aI_NO0pGntz",
+      "24-oLJOWrq-",
+      "uJnhrlBTkUD",
+      "e4p9b3NLWv1",
+      "taciOPHALir",
+      "sFffrlzkaAK",
+      "RcfURi_XY9L",
+      "gudwOZXq_AL",
+      "PhdqHmwgfzV",
+      "YVl_7iriJzi",
+      "YyRF7ARxNLK",
+      "T2f1llv7X1N",
+      "ExQpPInWmDb",
+      "lKJ8hTXatjI",
+      "8GEhnzKgxla",
+      "IpVhCbJ1i70",
+      "umVxYWRMMyo",
+      "zNc8ZHy6X6T",
+      "4uiiMYes5jf",
+      "63E_ty2IjTx",
+      "l1X5PddG9kW",
+      "Oo2Z_5kfdZC",
+      "r3pdaoTw20J",
+      "y7dXoEByECn",
+      "5EPq6SDIkG8",
+      "3-_etzoJPxh",
+      "f5b472KpgoI",
+      "lu-ywN2bR1N",
+      "y0hVGY37pJ9",
+      "x6TCHGDfcxq",
+      "SnAZP5ueuUk",
+      "qiQ877NphRz",
+      "Ugwdw0sBJnu",
+      "m7y-9zdQpB4",
+      "EsqyNuTCKIV",
+      "Rq22wGzBH16",
+      "RYzXg6xy69_",
+      "clXOhY_HZXd",
+      "pttfj1FG5ix",
+      "VkXJnIkI9Um",
+      "sBLo1Z83aRF",
+      "WNFxN-eBaNN",
+      "9ok68zDOZms",
+      "xl1vAqbTCBL",
+      "j_2YJosyFi1",
+      "ZT2u4jj8EyO",
+      "pQ-2W0nWZUP",
+      "X25tD-yaW6H",
+      "lT9IqDClwK1",
+      "9j0F755Sstu",
+      "cK3nJGxo3Uw",
+      "1X8ROFF4_28",
+      "Py9HVNmQLu4",
+      "yuZlCtDGaoG",
+      "RVGSBGPDO_T",
+      "KuCratmee0R",
+      "zlSY5dcOU98",
+      "c7jLau2caQV",
+      "9jjACTFbvnT",
+      "I8lpMJvEYGp",
+      "LiYQyoXxqwm",
+      "V3RbZWuE6QG",
+      "XiEEEy-1RYb",
+      "Nr3jBhpIRE6",
+      "KDe4n11Ziqu",
+      "JhTb18jP8jZ",
+      "CT-nr-iuJru",
+      "kFXP1p5hOJ0",
+      "P-ISD5BS4n4",
+      "sFxBCdLWHon",
+      "0WVBvoj4Bqp",
+      "jrMcNczDqTc",
+      "tJyFJvUuXvY",
+      "GDsMUs6kqYQ",
+      "Te4eQwryRUH",
+      "M3wrXgRn2qd",
+      "WREPmFHNYV9",
+      "pfHI492ubNs",
+      "SDRKxCFIjvp",
+      "UnqgmGSfYMn",
+      "WnMbcABFwq2",
+      "-vZ_hLQWz4V",
+      "EdvYLwbcUOG",
+      "9cDVC5kDSeo",
+      "CX2OWvdipxU",
+      "C_UqjNZHVDu",
+      "BUo4elpralB",
+      "I4VHTOpouAd",
+      "n8Z8ySROJZk",
+      "8QYh8ZODPwS",
+      "xQfrH66hkcI",
+      "tvfUyy3NzJW",
+      "C_j8IaRwC3Y",
+      "256w1eXsUNi",
+      "UBk9pBL0xVQ",
+      "VGdFSnLBcUC",
+      "anbGO-4qK7x",
+      "ZnKd1mc9gNC",
+      "Z5pe5ZSy0dI",
+      "qcrBWpm5Wbl",
+      "KqPQhziYcQD",
+      "PXQxt_d6Cyh",
+      "APeMUks2a7n",
+      "TV3_P7zEkRV",
+      "VOXr6uyCE-Z",
+      "VPo0fo2XG3X",
+      "CureRn4VrfP",
+      "1JCTn9LBGWV",
+      "KiFmyE7YAKt",
+      "E7xnQ-hLdhE",
+      "mb1D_ZKdhXs",
+      "3lyLukUiNzU",
+      "V7ZBw-TuIex",
+      "01DK7kU4CNB",
+      "V2rJ9jtHq1k",
+      "rNbQdsdbRJ6",
+      "s5DF0kKeTG3",
+      "fR5P6hyXadi",
+      "lnwnyDEeTD8",
+      "CGqgwuTaCmx",
+      "7_tU-Ej1jAB",
+      "QTFFE5Udtba",
+      "hYYy6LSYFd8",
+      "Ox0ckP4LbKi",
+      "arv9WoLykBp",
+      "aiVEK6KnHHi",
+      "OuXHIvl89FX",
+      "Tfx6HMJwcGm",
+      "N2MHd3Q12Gi",
+      "lCBNJA8eWwv",
+      "WT7RQa_Itp2",
+      "XQWW1bjXK6Y",
+      "TiAzNwg1SU2",
+      "GROF9nPGlYC",
+      "AOkyTSMvrRa",
+      "KAQfgv6mgQd",
+      "S_7wU7dMvD-",
+      "iFSNVtGScIt",
+      "H03QkCamiWr",
+      "Krkc-6QUr_f",
+      "JvWzOGZTaeB",
+      "nytwhmeH3OP",
+      "cTx1g5VeW3C",
+      "IKYIQaImEyR",
+      "ufp6AHJpZHj",
+      "JRNUYXMUFoZ",
+      "S_KXs4IFkDu",
+      "-fHXHhda2zB",
+      "uquJEj3e4u5",
+      "OD0X2ypqzQ0",
+      "cR7VeUfW6ci",
+      "H3OCgDBDF6l",
+      "vnEl30NheE2",
+      "D226WswwR5J",
+      "8G4QtKWczN1",
+      "yHHCOaeKmkK",
+      "pC5OkNy4Aqr",
+      "XCGv9UHr3yr",
+      "bUdFRBk5Kjp",
+      "K7uOFhVFeda",
+      "xJw9aRwlBxP",
+      "Es-gjcRN9eA",
+      "XcRNE0ZMjB1",
+      "UfAa-hJilts",
+      "Gqyc1kfzAvU",
+      "fGiE2gE6lc7",
+      "4exrGQWaYRl",
+      "QYOpxoksJTq",
+      "1qdW_Zuiw8A",
+      "NtypE65W0Fq",
+      "eUFL8uC2JAT",
+      "573ctD_Oyjz",
+      "-tJUxth66OD",
+      "o2hkV3_g7ZU",
+      "Uob2v4ReJzt",
+      "0qhTpT_-8w-",
+      "8zQJ25K1gyq",
+      "BTj2N26EMFi",
+      "Pl6VyrG2re1",
+      "1Qrhzs2vRLL",
+      "tx2IaZbVpZA",
+      "H22QZjQSN1d",
+      "W_9iuUI8DNO",
+      "tmHMn_k3o11",
+      "-E738E62n5t",
+      "_LcicOIs-Z0",
+      "w4w9ZDGHSte",
+      "Sx89W3tM_dH",
+      "2x_wNT6TrQB",
+      "Ias7iD417lp",
+      "7i0i7Ff-3Nr",
+      "ghh2u38HGwm",
+      "HUI1REMqBHu",
+      "Zm6CQzYfhVK",
+      "Q8kkLmAwlgS",
+      "gIQRIjbfCnD",
+      "sen9M6r2Ke6",
+      "8399a_mr5Mv",
+      "_zBjWH3g-P5",
+      "OTv2XIpnYtW",
+      "25nNlIeDoMr",
+      "7nKSLooY4uY",
+      "kWsuQ1Zvkuz",
+      "scIaNt8vGW5",
+      "loSDKqOo57W",
+      "ns-JahdITBl",
+      "7aVCXJaRh1A",
+      "6LDV26rYq5L",
+      "R5Lh57ovoKl",
+      "oxgeYNCUo-D",
+      "DgXHppvONT3",
+      "b0tYMugsEO0",
+      "5eaS-2B70rk",
+      "AGxqchy803Y",
+      "QFo3r-VWEQH",
+      "8MPZ3hZ-BEp"
+    ].filter(Boolean);
 
-    const RANDOM_WORDS = [
-      "piano","volcano","origami","interview","street","forest","train","ocean",
-      "chess","repair","history","physics","architecture","cooking","design",
-      "robot","painting","math","jazz","documentary","cat","dog","travel","sports",
-      "gaming","comedy","science","education","brazil","india","japan","korea"
-    ];
+    // Deduplicate (falls IDs doppelt vorkommen)
+    const UNIQUE_IDS = Array.from(new Set(VIDEO_IDS));
 
-    const CATEGORIES = [1,2,10,15,17,19,20,22,23,24,25,26,27,28];
-    const SAFE_SEARCH = "moderate";
-    const MIN_SECONDS = 60;
-
+    /***********************
+     * Player / UI
+     ***********************/
     let player;
     let currentVideoId = null;
     const backStack = [];
+
+    // "Shuffle Bag": spielt alle IDs einmal zufällig durch, dann neu mischen
+    let bag = [];
 
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
@@ -113,84 +513,78 @@
     const copyBtn = document.getElementById("copyBtn");
 
     function setStatus(t){ statusEl.textContent = t; }
-    function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
-    function isoDurationToSeconds(iso){
-      const m = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(iso || "");
-      if (!m) return 0;
-      return (parseInt(m[1]||0)*3600)+(parseInt(m[2]||0)*60)+(parseInt(m[3]||0));
+    function shuffle(arr){
+      for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
     }
 
-    async function ytSearch(){
-      const q = `${pick(RANDOM_WORDS)} ${Math.floor(Math.random()*100000)} ${pick(RANDOM_WORDS)}`;
-      const url = new URL("https://www.googleapis.com/youtube/v3/search");
-      url.searchParams.set("key", YT_API_KEY);
-      url.searchParams.set("part", "snippet");
-      url.searchParams.set("type", "video");
-      url.searchParams.set("maxResults", "25");
-      url.searchParams.set("q", q);
-      url.searchParams.set("videoCategoryId", pick(CATEGORIES));
-      url.searchParams.set("safeSearch", SAFE_SEARCH);
-      url.searchParams.set("videoEmbeddable", "true");
-      url.searchParams.set("videoSyndicated", "true");
-
-      const res = await fetch(url);
-      const data = await res.json();
-      return (data.items || []).map(it => it.id.videoId);
+    function refillBag(){
+      bag = shuffle([...UNIQUE_IDS]);
     }
 
-    async function filterNoShorts(ids){
-      const url = new URL("https://www.googleapis.com/youtube/v3/videos");
-      url.searchParams.set("key", YT_API_KEY);
-      url.searchParams.set("part", "contentDetails,status");
-      url.searchParams.set("id", ids.join(","));
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      return (data.items || [])
-        .filter(v => v.status.embeddable && isoDurationToSeconds(v.contentDetails.duration) >= MIN_SECONDS)
-        .map(v => v.id);
+    function nextFromBag(){
+      if(!bag.length) refillBag();
+      return bag.pop();
     }
 
-    async function loadRandom(){
-      setStatus("Suche zufälliges Video...");
-      nextBtn.disabled = true;
+    function updateActionButtons(vid){
+      const url = `https://www.youtube.com/watch?v=${vid}`;
+      openBtn.disabled = false;
+      copyBtn.disabled = false;
+      openBtn.onclick = ()=>window.open(url, "_blank");
+      copyBtn.onclick = ()=>navigator.clipboard.writeText(url);
+    }
 
-      try{
-        for(let i=0;i<6;i++){
-          const ids = await ytSearch();
-          const filtered = await filterNoShorts(ids);
-          if(filtered.length){
-            const vid = pick(filtered);
-            if(currentVideoId) backStack.push(currentVideoId);
-            currentVideoId = vid;
-            player.loadVideoById(vid);
-            prevBtn.disabled = backStack.length === 0;
+    function loadById(vid, pushToBackStack = true){
+      if(!vid) return;
 
-            const url = `https://www.youtube.com/watch?v=${vid}`;
-            openBtn.disabled = false;
-            copyBtn.disabled = false;
-            openBtn.onclick = ()=>window.open(url,"_blank");
-            copyBtn.onclick = ()=>navigator.clipboard.writeText(url);
-
-            setStatus("Video geladen");
-            break;
-          }
-        }
-      }catch(e){
-        setStatus("Fehler: "+e.message);
+      if(pushToBackStack && currentVideoId){
+        backStack.push(currentVideoId);
       }
 
+      currentVideoId = vid;
+      prevBtn.disabled = backStack.length === 0;
+
+      setStatus("Lade Video…");
+      nextBtn.disabled = true;
+
+      // Wenn Player noch nicht ready ist, merken wir uns nur die ID
+      if(player && typeof player.loadVideoById === "function"){
+        player.loadVideoById(vid);
+      }
+
+      updateActionButtons(vid);
       nextBtn.disabled = false;
+      setStatus("Video geladen");
+    }
+
+    function loadRandom(){
+      if(!UNIQUE_IDS.length){
+        setStatus("Keine Video-IDs vorhanden.");
+        nextBtn.disabled = true;
+        openBtn.disabled = true;
+        copyBtn.disabled = true;
+        return;
+      }
+
+      // Vermeide direktes Wiederholen, wenn möglich
+      let vid = nextFromBag();
+      if(UNIQUE_IDS.length > 1 && vid === currentVideoId){
+        vid = nextFromBag();
+      }
+
+      loadById(vid, true);
     }
 
     function goBack(){
       if(!backStack.length) return;
       const vid = backStack.pop();
-      currentVideoId = vid;
-      player.loadVideoById(vid);
       prevBtn.disabled = backStack.length === 0;
+      loadById(vid, false);
     }
 
     prevBtn.addEventListener("click", goBack);
@@ -198,11 +592,22 @@
 
     function onYouTubeIframeAPIReady(){
       player = new YT.Player("player",{
-        host:"https://www.youtube-nocookie.com",
-        width:"100%",
-        height:"100%",
-        playerVars:{autoplay:1,rel:0},
-        events:{ onReady: loadRandom }
+        host: "https://www.youtube-nocookie.com",
+        width: "100%",
+        height: "100%",
+        playerVars: { autoplay: 1, rel: 0 },
+        events: {
+          onReady: () => {
+            setStatus("Bereit.");
+            refillBag();
+            loadRandom();
+          },
+          onError: () => {
+            // Falls ein Video nicht embeddable/gelöscht ist: direkt weiter
+            setStatus("Video nicht abspielbar – überspringe…");
+            loadRandom();
+          }
+        }
       });
     }
     window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
