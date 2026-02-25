@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Link Generator</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 50px auto; 
+            padding: 20px; 
+            background: #f0f0f0; 
+        }
+        .box { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+        }
+        input { 
+            width: 60px; 
+            padding: 8px; 
+            margin: 0 10px;
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 0 5px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-weight: bold;
+        }
+        .start { background: #28a745; color: white; }
+        .stop { background: #dc3545; color: white; }
+        #links { 
+            margin-top: 20px; 
+            font-family: monospace; 
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .link {
+            background: #f8f9fa;
+            padding: 8px;
+            margin: 5px 0;
+            border-left: 3px solid #ff0000;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>🔗 youtu.be Generator</h3>
+        <p>Schema: https://youtu.be/It3opK1PE5M</p>
+
+        Anzahl: <input type="number" id="num" value="5" min="1">
+        <button class="start" onclick="generate()">▶️ Start</button>
+        <button class="stop" onclick="clearAll()">⏹️ Stop</button>
+
+        <div id="links"></div>
+    </div>
+
+    <script>
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+
+        function generate() {
+            const count = document.getElementById('num').value;
+            const container = document.getElementById('links');
+            let html = '';
+
+            for(let i = 0; i < count; i++) {
+                let id = '';
+                for(let j = 0; j < 11; j++) {
+                    id += chars[Math.floor(Math.random() * chars.length)];
+                }
+                html += `<div class="link">https://youtu.be/${id}</div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function clearAll() {
+            document.getElementById('links').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
